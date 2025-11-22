@@ -18,6 +18,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // Log for debugging
+    console.log('Processing image detection request...');
+    console.log('Image data length:', imageData?.length || 0);
+    console.log('Image data prefix:', imageData?.substring(0, 50) || 'none');
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -32,7 +37,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             content: [
               {
                 type: 'text',
-                text: 'You are a food ingredient recognition expert. Carefully analyze this image and identify ALL visible food ingredients, including eggs, vegetables, fruits, meats, dairy products, grains, spices, and any other edible items. Look closely at the entire image.\n\nReturn ONLY a valid JSON array with this exact format:\n[{"name":"ingredient_name","confidence":0.95}]\n\nRules:\n- Use singular form (e.g., "egg" not "eggs")\n- Use common names (e.g., "egg" not "chicken egg")\n- Include confidence score between 0.5 and 1.0\n- List ALL ingredients you can identify, even if partially visible\n- Do not include any text outside the JSON array'
+                text: 'You are an expert food ingredient identifier. Analyze this image VERY CAREFULLY and identify ALL food ingredients visible.\n\nLook for:\n- Fresh produce (vegetables, fruits, herbs)\n- Proteins (meats, eggs, fish, tofu)\n- Dairy products (milk, cheese, yogurt, butter)\n- Grains and starches (rice, pasta, bread, flour)\n- Packaged foods and condiments\n- Spices and seasonings\n- Any other edible items\n\nIMPORTANT: Even if you see just 1 or 2 ingredients, list them. If you cannot identify any food items with confidence, return an empty array [].\n\nReturn ONLY a valid JSON array in this EXACT format with NO additional text:\n[{"name":"tomato","confidence":0.95},{"name":"onion","confidence":0.88}]\n\nRules:\n- Use singular form (e.g., "egg" not "eggs")\n- Use common names (e.g., "tomato" not "cherry tomato")\n- Confidence must be between 0.5 and 1.0\n- Include ALL visible ingredients\n- Return empty array [] if no food is visible\n- NO markdown, NO code blocks, ONLY the JSON array'
               },
               {
                 type: 'image_url',
@@ -44,17 +49,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             ]
           }
         ],
-        max_tokens: 1000
+        max_tokens: 1000,
+        temperature: 0.2
       })
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('OpenAI API error:', errorData);
       throw new Error(errorData.error?.message || `API Error: ${response.status}`);
     }
 
     const data = await response.json();
-    const content = data.choices[0].message.content;
+    console.log('OpenAI response:', JSON.stringify(data, null, 2));
+
+    const content = data.choices[0]?.message?.content;
+    console.log('Raw content from GPT:', content);
+
+    if (!content) {
+      throw new Error('No content in OpenAI response');
+    }
 
     // Clean up the response - remove markdown code blocks if present
     let cleanContent = content.trim();
@@ -64,7 +78,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       cleanContent = cleanContent.replace(/```\n?/g, '');
     }
 
+    console.log('Cleaned content:', cleanContent);
+
     const ingredientsData = JSON.parse(cleanContent);
+    console.log('Parsed ingredients:', ingredientsData);
+
+    // Ensure it's an array
+    if (!Array.isArray(ingredientsData)) {
+      console.error('Response is not an array:', ingredientsData);
+      return res.status(200).json({ ingredients: [] });
+    }
 
     return res.status(200).json({ ingredients: ingredientsData });
   } catch (error) {

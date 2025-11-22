@@ -236,6 +236,10 @@ function Home() {
     setError('');
 
     try {
+      console.log('Sending image to API for ingredient detection...');
+      console.log('Image data length:', imageData.length);
+      console.log('Image starts with:', imageData.substring(0, 30));
+
       // Call serverless API to detect ingredients
       const response = await fetch('/api/detect-ingredients', {
         method: 'POST',
@@ -245,26 +249,33 @@ function Home() {
         body: JSON.stringify({ imageData })
       });
 
+      console.log('API response status:', response.status);
+
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.error('API error response:', errorData);
         throw new Error(errorData.error || `API Error: ${response.status}`);
       }
 
       const data = await response.json();
-      const ingredientsData = data.ingredients;
+      console.log('API response data:', data);
 
-      if (ingredientsData.length === 0) {
-        setError('⚠️ No ingredients detected in the image. Please try again with a clearer photo.');
-        setDetectedIngredients(mockIngredients);
+      const ingredientsData = data.ingredients;
+      console.log('Detected ingredients:', ingredientsData);
+
+      if (!ingredientsData || ingredientsData.length === 0) {
+        setError('⚠️ No ingredients detected in the image. Please try again with a clearer photo showing food items.');
+        setDetectedIngredients([]);
       } else {
         setDetectedIngredients(ingredientsData);
+        setError('');
       }
       setIsProcessing(false);
     } catch (error) {
       console.error('Error detecting ingredients:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      setError(`❌ Failed to detect ingredients: ${errorMessage}. Using demo data.`);
-      setDetectedIngredients(mockIngredients);
+      setError(`❌ Failed to detect ingredients: ${errorMessage}`);
+      setDetectedIngredients([]);
       setIsProcessing(false);
     }
   };
