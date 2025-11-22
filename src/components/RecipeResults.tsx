@@ -1,7 +1,4 @@
-import { Clock, ChefHat, TrendingUp, ArrowLeft, Sparkles } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Clock, ChefHat, TrendingUp, ArrowLeft, Sparkles, Camera } from 'lucide-react';
 
 export interface Recipe {
   id: string;
@@ -33,170 +30,216 @@ export default function RecipeResults({
 }: RecipeResultsProps) {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Easy': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-      case 'Medium': return 'bg-amber-100 text-amber-700 border-amber-200';
-      case 'Hard': return 'bg-red-100 text-red-700 border-red-200';
-      default: return 'bg-slate-100 text-slate-700 border-slate-200';
+      case 'Easy': return 'from-emerald-400 to-teal-400';
+      case 'Medium': return 'from-amber-400 to-orange-400';
+      case 'Hard': return 'from-red-400 to-pink-400';
+      default: return 'from-slate-400 to-slate-500';
     }
   };
 
-  const getMatchColor = (percentage: number) => {
-    if (percentage >= 80) return 'text-emerald-600';
-    if (percentage >= 60) return 'text-amber-600';
-    return 'text-slate-600';
+  const getMatchGradient = (percentage: number) => {
+    if (percentage >= 80) return 'from-emerald-500 via-teal-500 to-cyan-500';
+    if (percentage >= 60) return 'from-amber-500 via-orange-500 to-red-500';
+    return 'from-slate-400 via-slate-500 to-slate-600';
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-white to-slate-50 flex flex-col">
+    <div className="fixed inset-0 bg-gradient-to-br from-violet-600 via-fuchsia-500 to-orange-400 flex flex-col overflow-hidden">
+      {/* Animated background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-300 rounded-full blur-3xl animate-pulse delay-75" />
+      </div>
+
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 shadow-sm">
+      <div className="relative z-10 bg-black/20 backdrop-blur-xl border-b border-white/10">
         <div className="p-6">
-          <div className="flex items-center gap-4 mb-4">
-            <Button onClick={onBack} variant="ghost" size="icon" className="text-slate-600">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onBack}
+              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-xl flex items-center justify-center text-white transition-all hover:scale-105 active:scale-95"
+            >
               <ArrowLeft className="w-5 h-5" />
-            </Button>
+            </button>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-slate-900">Recipe Suggestions</h2>
-              <p className="text-sm text-slate-500">
-                {isLoading ? 'Finding recipes...' : `${recipes.length} recipes found`}
+              <h2 className="text-2xl font-black text-white tracking-tight">Your Recipe Mix</h2>
+              <p className="text-sm text-white/80 font-medium">
+                {isLoading ? 'Curating your playlist...' : `${recipes.length} perfect matches`}
               </p>
             </div>
-            <Button
+            <button
               onClick={onNewScan}
-              variant="outline"
-              size="sm"
-              className="border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+              className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur-xl rounded-xl text-white font-semibold text-sm transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
             >
+              <Camera className="w-4 h-4" />
               New Scan
-            </Button>
+            </button>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-6">
+      <div className="flex-1 overflow-y-auto relative z-10">
+        <div className="p-6 pb-24 space-y-4 max-w-4xl mx-auto">
           {/* Loading State */}
           {isLoading && (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="p-4 animate-pulse">
+                <div
+                  key={i}
+                  className="bg-white/10 backdrop-blur-xl rounded-3xl p-6 animate-pulse border border-white/20"
+                >
                   <div className="flex gap-4">
-                    <div className="w-24 h-24 bg-slate-200 rounded-lg" />
+                    <div className="w-24 h-24 bg-white/20 rounded-2xl" />
                     <div className="flex-1 space-y-3">
-                      <div className="h-4 bg-slate-200 rounded w-3/4" />
-                      <div className="h-3 bg-slate-200 rounded w-1/2" />
-                      <div className="h-3 bg-slate-200 rounded w-1/3" />
+                      <div className="h-6 bg-white/20 rounded-lg w-3/4" />
+                      <div className="h-4 bg-white/20 rounded-lg w-1/2" />
+                      <div className="h-4 bg-white/20 rounded-lg w-1/3" />
                     </div>
                   </div>
-                </Card>
+                </div>
               ))}
             </div>
           )}
 
           {/* Error State */}
           {!isLoading && error && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
-              <p className="text-sm text-amber-800">{error}</p>
+            <div className="bg-orange-100 border-2 border-orange-300 rounded-2xl p-5 shadow-xl">
+              <p className="text-sm text-orange-900 font-semibold">{error}</p>
             </div>
           )}
 
           {/* No Results */}
           {!isLoading && recipes.length === 0 && (
-            <div className="text-center py-16">
-              <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <ChefHat className="w-10 h-10 text-slate-400" />
+            <div className="text-center py-20">
+              <div className="inline-flex w-24 h-24 bg-white/10 backdrop-blur-xl rounded-3xl items-center justify-center mx-auto mb-6 border-2 border-white/20">
+                <ChefHat className="w-12 h-12 text-white" />
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">No Recipes Found</h3>
-              <p className="text-slate-500 mb-6 max-w-sm mx-auto">
-                We couldn't find recipes matching your ingredients. Try adding more items or scanning again.
+              <h3 className="text-3xl font-black text-white mb-3">No Recipes Found</h3>
+              <p className="text-white/80 mb-8 max-w-sm mx-auto text-lg">
+                Couldn't find the perfect match. Try different ingredients!
               </p>
               <div className="flex gap-3 justify-center">
-                <Button onClick={onBack} variant="outline">
+                <button
+                  onClick={onBack}
+                  className="px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-xl rounded-xl text-white font-bold transition-all hover:scale-105 active:scale-95"
+                >
                   Edit Ingredients
-                </Button>
-                <Button onClick={onNewScan} className="bg-emerald-600 hover:bg-emerald-700">
+                </button>
+                <button
+                  onClick={onNewScan}
+                  className="px-6 py-3 bg-white hover:bg-white/90 rounded-xl text-fuchsia-600 font-black transition-all hover:scale-105 active:scale-95"
+                >
                   New Scan
-                </Button>
+                </button>
               </div>
             </div>
           )}
 
-          {/* Recipe Cards */}
+          {/* Recipe Cards - Spotify Style */}
           {!isLoading && recipes.length > 0 && (
-            <div className="space-y-4">
-              {recipes.map((recipe) => (
-                <Card
+            <div className="space-y-3">
+              {recipes.map((recipe, index) => (
+                <div
                   key={recipe.id}
                   onClick={() => onSelectRecipe(recipe)}
-                  className="overflow-hidden border-slate-200 hover:border-emerald-300 hover:shadow-lg transition-all cursor-pointer bg-white"
+                  className="group relative bg-white/10 backdrop-blur-xl hover:bg-white/20 border border-white/20 rounded-3xl overflow-hidden cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98] hover:shadow-2xl"
+                  style={{ animationDelay: `${index * 50}ms` }}
                 >
                   <div className="flex gap-4 p-4">
-                    {/* Recipe Image */}
-                    <div className="relative w-28 h-28 flex-shrink-0">
-                      <img
-                        src={recipe.image}
-                        alt={recipe.title}
-                        className="w-full h-full object-cover rounded-lg"
-                      />
+                    {/* Album Art Style Image */}
+                    <div className="relative w-24 h-24 flex-shrink-0">
+                      <div className={`absolute -inset-1 bg-gradient-to-br ${getDifficultyColor(recipe.difficulty)} rounded-2xl opacity-60 blur-sm group-hover:opacity-100 transition-opacity`} />
+                      <div className="relative w-full h-full overflow-hidden rounded-2xl shadow-xl">
+                        <img
+                          src={recipe.image}
+                          alt={recipe.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      {/* Track number badge */}
+                      <div className="absolute -top-2 -left-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg font-black text-sm text-slate-900">
+                        {index + 1}
+                      </div>
                       {recipe.matchPercentage >= 80 && (
-                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
+                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
                           <Sparkles className="w-4 h-4 text-white" />
                         </div>
                       )}
                     </div>
 
-                    {/* Recipe Info */}
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-slate-900 mb-2 line-clamp-2">
-                        {recipe.title}
-                      </h3>
-
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        <Badge variant="outline" className={getDifficultyColor(recipe.difficulty)}>
-                          {recipe.difficulty}
-                        </Badge>
-                        {recipe.cuisine && (
-                          <Badge variant="outline" className="bg-slate-100 text-slate-700 border-slate-200">
-                            {recipe.cuisine}
-                          </Badge>
-                        )}
+                    {/* Track Info */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                      <div>
+                        <h3 className="font-black text-white text-lg mb-1 line-clamp-2 group-hover:underline">
+                          {recipe.title}
+                        </h3>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-bold text-white bg-gradient-to-r ${getDifficultyColor(recipe.difficulty)}`}>
+                            {recipe.difficulty}
+                          </span>
+                          {recipe.cuisine && (
+                            <span className="text-white/70 text-sm font-medium">
+                              {recipe.cuisine}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-4 text-sm text-slate-600">
-                        <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-4 text-sm text-white/80 font-medium">
+                        <div className="flex items-center gap-1.5">
                           <Clock className="w-4 h-4" />
-                          <span>{recipe.cookingTime} min</span>
+                          <span>{recipe.cookingTime}m</span>
                         </div>
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1.5">
                           <ChefHat className="w-4 h-4" />
-                          <span>{recipe.servings} servings</span>
+                          <span>{recipe.servings}</span>
                         </div>
-                      </div>
-
-                      {/* Match Percentage */}
-                      <div className="mt-3 flex items-center gap-2">
-                        <TrendingUp className={`w-4 h-4 ${getMatchColor(recipe.matchPercentage)}`} />
-                        <div className="flex-1">
-                          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all"
-                              style={{ width: `${recipe.matchPercentage}%` }}
-                            />
-                          </div>
+                        <div className="flex items-center gap-1.5 ml-auto">
+                          <TrendingUp className="w-4 h-4" />
+                          <span className="font-black text-white">{recipe.matchPercentage}%</span>
                         </div>
-                        <span className={`text-sm font-semibold ${getMatchColor(recipe.matchPercentage)}`}>
-                          {recipe.matchPercentage}%
-                        </span>
                       </div>
                     </div>
                   </div>
-                </Card>
+
+                  {/* Match percentage bar */}
+                  <div className="h-1 bg-white/10">
+                    <div
+                      className={`h-full bg-gradient-to-r ${getMatchGradient(recipe.matchPercentage)} transition-all duration-500`}
+                      style={{ width: `${recipe.matchPercentage}%` }}
+                    />
+                  </div>
+                </div>
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {/* Fixed stats footer */}
+      {!isLoading && recipes.length > 0 && (
+        <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 via-black/40 to-transparent backdrop-blur-xl border-t border-white/10 pointer-events-none z-20">
+          <div className="max-w-4xl mx-auto flex items-center justify-between text-white/90">
+            <div className="text-center">
+              <p className="text-2xl font-black">{recipes.length}</p>
+              <p className="text-xs font-medium opacity-80">Recipes</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-black">
+                {Math.round(recipes.reduce((sum, r) => sum + r.matchPercentage, 0) / recipes.length)}%
+              </p>
+              <p className="text-xs font-medium opacity-80">Avg Match</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-black">
+                {Math.round(recipes.reduce((sum, r) => sum + r.cookingTime, 0) / recipes.length)}m
+              </p>
+              <p className="text-xs font-medium opacity-80">Avg Time</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -67,32 +67,69 @@ export default function CameraCapture({ onImageCaptured, isProcessing = false }:
   // Show permission request screen
   if (!permissionRequested && !stream) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-6">
-        <div className="max-w-md w-full space-y-6">
-          <div className="text-center space-y-4">
-            <div className="w-24 h-24 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto">
-              <Camera className="w-12 h-12 text-blue-500" />
+      <div className="fixed inset-0 bg-gradient-to-br from-violet-600 via-fuchsia-500 to-orange-400 flex items-center justify-center p-6 overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-300 rounded-full blur-3xl animate-pulse delay-75" />
+        </div>
+
+        <div className="max-w-md w-full space-y-8 relative z-10">
+          <div className="text-center space-y-6 animate-fade-in">
+            {/* Retro-modern icon */}
+            <div className="relative mx-auto w-32 h-32">
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-300 via-pink-400 to-purple-500 rounded-3xl rotate-6 blur-xl opacity-70 animate-pulse" />
+              <div className="relative w-full h-full bg-white rounded-3xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform">
+                <Camera className="w-16 h-16 text-transparent bg-gradient-to-br from-violet-600 to-fuchsia-500 bg-clip-text" style={{ WebkitTextFillColor: 'transparent', backgroundClip: 'text' }} />
+                <Camera className="w-16 h-16 text-fuchsia-500" />
+              </div>
             </div>
-            <h2 className="text-3xl font-bold text-white">AI Recipe Finder</h2>
-            <p className="text-slate-300 text-lg">
-              Scan your ingredients with your camera to discover amazing recipes
+
+            {/* Title with retro gradient */}
+            <div className="space-y-3">
+              <h1 className="text-5xl font-black text-white drop-shadow-lg tracking-tight">
+                Receiptify
+                <span className="block text-3xl font-bold bg-gradient-to-r from-yellow-200 via-pink-200 to-purple-200 bg-clip-text text-transparent mt-1">
+                  For Your Kitchen
+                </span>
+              </h1>
+              <p className="text-white/90 text-lg font-medium px-4">
+                Turn ingredients into instant recipe magic ✨
+              </p>
+            </div>
+          </div>
+
+          {/* Modern card with glassmorphism */}
+          <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-6 border border-white/20 shadow-2xl space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                <Camera className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="font-bold text-white text-lg">Camera Access</h3>
+            </div>
+            <p className="text-white/80 text-sm leading-relaxed">
+              We'll scan your ingredients and create personalized recipes. Your photos are never stored — just processed in real-time! 🔒
             </p>
           </div>
-          <div className="space-y-4 bg-slate-800/50 rounded-xl p-6 border border-slate-700">
-            <h3 className="font-semibold text-white flex items-center gap-2">
-              <Camera className="w-5 h-5" />
-              Camera Access Required
-            </h3>
-            <p className="text-slate-400 text-sm">
-              We need access to your camera to scan and identify ingredients. Your photos are processed securely and never stored.
-            </p>
-          </div>
-          <Button 
-            onClick={initCamera} 
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white h-14 text-lg font-semibold"
+
+          {/* CTA Button with retro vibes */}
+          <button
+            onClick={initCamera}
+            className="group w-full h-16 bg-white text-transparent bg-gradient-to-r from-violet-600 to-fuchsia-500 bg-clip-text rounded-2xl font-black text-xl shadow-2xl transform hover:scale-105 transition-all active:scale-95 relative overflow-hidden"
           >
-            Enable Camera
-          </Button>
+            <div className="absolute inset-0 bg-white" />
+            <div className="absolute inset-0 bg-gradient-to-r from-violet-600 to-fuchsia-500 opacity-0 group-hover:opacity-10 transition-opacity" />
+            <span className="relative bg-gradient-to-r from-violet-600 to-fuchsia-500 bg-clip-text" style={{ WebkitTextFillColor: 'transparent' }}>
+              Let's Cook! 🍳
+            </span>
+          </button>
+
+          {/* Retro dots decoration */}
+          <div className="flex justify-center gap-2 pt-4">
+            <div className="w-2 h-2 rounded-full bg-white/40" />
+            <div className="w-2 h-2 rounded-full bg-white/60" />
+            <div className="w-2 h-2 rounded-full bg-white/40" />
+          </div>
         </div>
       </div>
     );
@@ -161,36 +198,60 @@ export default function CameraCapture({ onImageCaptured, isProcessing = false }:
         />
         <canvas ref={canvasRef} className="hidden" />
 
-        {/* Overlay UI */}
+        {/* Overlay UI with modern gradients */}
         <div className="absolute inset-0 pointer-events-none">
-          {/* Top gradient */}
-          <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/60 to-transparent" />
-          
-          {/* Bottom gradient */}
-          <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black/80 to-transparent" />
-          
-          {/* Scanning frame */}
-          <div className="absolute inset-0 flex items-center justify-center p-8">
-            <div className="w-full max-w-md aspect-square border-2 border-white/30 rounded-3xl relative">
-              <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white rounded-tl-3xl" />
-              <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white rounded-tr-3xl" />
-              <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-white rounded-bl-3xl" />
-              <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-white rounded-br-3xl" />
+          {/* Top gradient with color */}
+          <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-b from-black via-black/60 to-transparent" />
+
+          {/* Bottom gradient with vibrant touch */}
+          <div className="absolute bottom-0 left-0 right-0 h-56 bg-gradient-to-t from-black via-black/80 to-transparent" />
+
+          {/* Retro scanning frame with gradient border */}
+          <div className="absolute inset-0 flex items-center justify-center p-6">
+            <div className="relative w-full max-w-sm aspect-square">
+              {/* Animated gradient border */}
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 opacity-60 blur-sm" />
+              <div className="absolute inset-[2px] rounded-3xl bg-black/20 backdrop-blur-sm" />
+
+              {/* Corner decorations */}
+              <div className="absolute -top-1 -left-1 w-12 h-12 border-t-4 border-l-4 border-white rounded-tl-3xl" />
+              <div className="absolute -top-1 -right-1 w-12 h-12 border-t-4 border-r-4 border-white rounded-tr-3xl" />
+              <div className="absolute -bottom-1 -left-1 w-12 h-12 border-b-4 border-l-4 border-white rounded-bl-3xl" />
+              <div className="absolute -bottom-1 -right-1 w-12 h-12 border-b-4 border-r-4 border-white rounded-br-3xl" />
+
+              {/* Center text */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center space-y-2 px-4">
+                  <p className="text-white font-bold text-sm tracking-wide drop-shadow-lg">
+                    Position ingredients here
+                  </p>
+                  <div className="flex justify-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse delay-75" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse delay-150" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Header */}
+        {/* Header with modern styling */}
         <div className="absolute top-0 left-0 right-0 p-6 pointer-events-auto">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-white">AI Recipe Finder</h1>
-              <p className="text-sm text-white/80 mt-1">Scan your ingredients</p>
+            <div className="space-y-1">
+              <h1 className="text-2xl font-black text-white drop-shadow-lg tracking-tight">
+                Receiptify
+              </h1>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-gradient-to-r from-violet-400 to-fuchsia-400 animate-pulse" />
+                <p className="text-xs font-medium text-white/90">Scan Mode Active</p>
+              </div>
             </div>
             {lastImage && (
               <button
                 onClick={() => setShowLastImage(true)}
-                className="w-14 h-14 rounded-xl overflow-hidden border-2 border-white/50 hover:border-white transition-colors"
+                className="group w-14 h-14 rounded-2xl overflow-hidden border-2 border-white/40 hover:border-white transition-all shadow-lg hover:scale-105 active:scale-95"
               >
                 <img src={lastImage} alt="Last" className="w-full h-full object-cover" />
               </button>
@@ -199,38 +260,42 @@ export default function CameraCapture({ onImageCaptured, isProcessing = false }:
         </div>
       </div>
 
-      {/* Bottom Controls */}
-      <div className="p-6 bg-gradient-to-t from-black to-transparent">
-        <div className="flex items-center justify-center gap-4">
-          {lastImage && (
-            <Button
-              onClick={() => setShowLastImage(true)}
-              variant="outline"
-              size="icon"
-              className="w-14 h-14 rounded-full border-2 border-white/30 bg-white/10 hover:bg-white/20 text-white"
-            >
-              <ImageIcon className="w-6 h-6" />
-            </Button>
-          )}
-          
-          <Button
-            onClick={captureImage}
-            disabled={isProcessing}
-            className="w-20 h-20 rounded-full bg-white hover:bg-slate-100 text-slate-900 shadow-xl disabled:opacity-50"
-          >
-            {isProcessing ? (
-              <Loader2 className="w-8 h-8 animate-spin" />
-            ) : (
-              <Camera className="w-8 h-8" />
+      {/* Bottom Controls with modern design */}
+      <div className="absolute bottom-0 left-0 right-0 p-6 pointer-events-auto">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center justify-center gap-6">
+            {lastImage && (
+              <button
+                onClick={() => setShowLastImage(true)}
+                className="w-14 h-14 rounded-2xl border-2 border-white/30 bg-white/10 hover:bg-white/20 backdrop-blur-xl flex items-center justify-center text-white transition-all hover:scale-105 active:scale-95"
+              >
+                <ImageIcon className="w-6 h-6" />
+              </button>
             )}
-          </Button>
 
-          <div className="w-14" />
+            {/* Main capture button with gradient */}
+            <button
+              onClick={captureImage}
+              disabled={isProcessing}
+              className="relative group w-20 h-20 disabled:opacity-50"
+            >
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-orange-500 blur-lg opacity-70 group-hover:opacity-100 transition-opacity" />
+              <div className="relative w-full h-full rounded-full bg-white flex items-center justify-center shadow-2xl group-hover:scale-105 group-active:scale-95 transition-transform">
+                {isProcessing ? (
+                  <Loader2 className="w-8 h-8 text-fuchsia-500 animate-spin" />
+                ) : (
+                  <Camera className="w-8 h-8 text-fuchsia-500" />
+                )}
+              </div>
+            </button>
+
+            {!lastImage && <div className="w-14" />}
+          </div>
+
+          <p className="text-center text-white/80 text-sm font-medium drop-shadow">
+            Tap to capture your ingredients ✨
+          </p>
         </div>
-        
-        <p className="text-center text-white/60 text-sm mt-4">
-          Position ingredients within the frame and tap to capture
-        </p>
       </div>
     </div>
   );
