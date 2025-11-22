@@ -264,13 +264,16 @@ function Home() {
       console.log('Detected ingredients:', ingredientsData);
 
       if (!ingredientsData || ingredientsData.length === 0) {
+        console.log('No ingredients found, setting empty array');
         setError('⚠️ No ingredients detected in the image. Please try again with a clearer photo showing food items.');
         setDetectedIngredients([]);
       } else {
+        console.log('Setting detectedIngredients state to:', ingredientsData);
         setDetectedIngredients(ingredientsData);
         setError('');
       }
       setIsProcessing(false);
+      console.log('After setting state, detectedIngredients should be:', ingredientsData);
     } catch (error) {
       console.error('Error detecting ingredients:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';

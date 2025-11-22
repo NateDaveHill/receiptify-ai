@@ -33,6 +33,8 @@ export default function IngredientRecognition({
 
   // Update local state when detectedIngredients prop changes
   useEffect(() => {
+    console.log('IngredientRecognition received detectedIngredients:', detectedIngredients);
+    console.log('Setting local ingredients state to:', detectedIngredients);
     setIngredients(detectedIngredients);
   }, [detectedIngredients]);
 
