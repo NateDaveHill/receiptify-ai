@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Plus, Check, Sparkles, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,6 +30,11 @@ export default function IngredientRecognition({
   const [ingredients, setIngredients] = useState<Ingredient[]>(detectedIngredients);
   const [newIngredient, setNewIngredient] = useState('');
   const [showAddInput, setShowAddInput] = useState(false);
+
+  // Update local state when detectedIngredients prop changes
+  useEffect(() => {
+    setIngredients(detectedIngredients);
+  }, [detectedIngredients]);
 
   const removeIngredient = (index: number) => {
     setIngredients(prev => prev.filter((_, i) => i !== index));
